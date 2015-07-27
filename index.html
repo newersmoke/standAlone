@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <title></title>
+        <script src="standAlone.js"></script>
+        <script>
+            document.addEventListener( "DOMContentLoaded", function() {
+            
+            var stands = new standAlone('createPipeCanvas', 
+            {'element': 'first' ,
+                data : {1 : {name : '70% Profit' ,value : 70}, 2:{name : '30% Loss' ,value : 30}},
+                height : 300, 
+                width : 300
+            });
+            var stands = new standAlone('createPipeCanvas', 
+                {'element': 'second' ,
+                    data : {1 : {name : '15% Profit' ,value : 15}, 2:{name : '85% Loss' ,value : 85}},
+                     height : 300, 
+                     width : 300, 
+                     colors:['black', 'blue'], 
+                         pie : {
+                            inside_color : 'white',
+                            outside_color : 'white',
+                            font : "24px Arial",
+                            fillStyle : 'green',
+                            strokeStyle : 'green',
+                            paddingleft : 10,
+                            paddingtop : 20,
+                            paddingcenter : 30,
+                            paddingelements : 10,
+                        } 
+                }
+            );
+             /*stand.caller('dsas');
+            stand.init('findElement', {'element': '1canvas'});*/
+            /*var stand = new standAlone();
+            stand.canvas;*/
+            
+            });
+           
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas" class="canvas" width="0" height="0"></canvas>
+        <canvas id="first"  class="first"></canvas>
+        <canvas class="second"></canvas>
+        <canvas class="clock"></canvas>
+        <canvas class="pie"></canvas>
+        <canvas class="piepies"></canvas>
+    </body>
+</html>

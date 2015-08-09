@@ -1,6 +1,7 @@
 # standAlone
 
-Small javascript libary based on canvas. 
+Quick start with chart. Create chart in one line. Flexible and rapidly configurable.
+Small javascript libary based on canvas (canvas, htm5, javascript). 
 
 Now the library contains two methods :
 - createPipeCanvas

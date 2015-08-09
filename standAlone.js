@@ -9,10 +9,12 @@ function standAlone(m, c){
             min : null,
             max : null,
             color : "#000",
-            colors : ['#7E3817', '#C35817', '#EE9A4D', '#A0C544', '#348017', '#307D7E'],
+            colors : ['#7E3817', '#C35817', '#EE9A4D', 
+                      '#A0C544', '#348017', '#307D7E'],
             lineWidth : 1,
             globalAlpha : 1,
-            padding : {up : 30, down : 30, left : 30, right : 30, center : 30, elements : 10},
+            padding : {up : 30, down : 30, left : 30, 
+                       right : 30, center : 30, elements : 10},
             clock: {radius: 10,
                     background : {
                         color : '#000',
@@ -37,7 +39,7 @@ function standAlone(m, c){
         };
 
     var configs = function(c){
-        var configs = configDefault;
+        var conf = configDefault;
         for(var propVals in configDefault){
             if(typeof c != 'undefined' && c.hasOwnProperty(propVals)){
                 if(typeof configDefault[propVals] == 'object'){
@@ -45,7 +47,8 @@ function standAlone(m, c){
                         if(typeof configDefault[propVals][pt] == 'object'){
                             for(var ptt in configDefault[propVals][pt]){
                                 if(c[propVals][pt].hasOwnProperty(ptt)){
-                                    configDefault[propVals][pt][ptt] = c[propVals][pt][ptt];
+                                    configDefault[propVals][pt][ptt] = 
+                                            c[propVals][pt][ptt];
                                 }
                             }
                         } else {
@@ -55,11 +58,11 @@ function standAlone(m, c){
                         }
                     }
                 } else {
-                    configs[propVals] = c[propVals];
+                    conf[propVals] = c[propVals];
                 }
             }
         }
-        return configs;
+        return conf;
     }(c);
     
     configs.get = function(c){
@@ -99,14 +102,16 @@ function standAlone(m, c){
     setElementCanvas = function(){
         try{
             var elementHtml = 0;
-            if(configs.element.indexOf('.') >= 0 || configs.element.indexOf('#') >= 0){
+            if(configs.element.indexOf('.') >= 0 || 
+                    configs.element.indexOf('#') >= 0){
                 elementHtml = document.querySelector(configs.element);
             } else {
                 elementHtml = document.getElementById(configs.element);
             }
 
             if(elementHtml == undefined){
-                elementHtml = document.getElementsByClassName(configs.element)[0];
+                elementHtml = 
+                        document.getElementsByClassName(configs.element)[0];
                 if(elementHtml == undefined){
                     elementHtml = 0;
                 }
@@ -249,7 +254,8 @@ function standAlone(m, c){
             canvas.font = configs.get('pie/font');
             
             canvas.beginPath();
-            var angle = (2 * (lastPosition) + (Math.PI*2*(data[i].value/total)) ) /2;
+            var angle = (2 * (lastPosition) + 
+                            (Math.PI*2*(data[i].value/total)) ) /2;
                 var x = radius * Math.cos(angle),
                     y = radius * Math.sin(angle);
                     
@@ -262,7 +268,8 @@ function standAlone(m, c){
                         x = configs.get('width') / 2 + x;
                     }
                 
-                canvas.moveTo(configs.get('width') / delimeter,configs.get('height') / delimeter);
+                canvas.moveTo(configs.get('width') / delimeter,
+                              configs.get('height') / delimeter);
                 canvas.lineTo(x , y);
                 canvas.fillText(data[i].name, x , y);
                 lastPosition += Math.PI*2*(data[i].value/total);

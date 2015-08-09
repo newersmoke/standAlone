@@ -1,6 +1,6 @@
 function standAlone(m, c){
-     var debug = 1;
-     var canvas = {};
+     var canvas = {},
+         debug = 1;
      configDefault = {
             element : '',
             data : '',
@@ -8,14 +8,14 @@ function standAlone(m, c){
             height : 100,
             min : null,
             max : null,
-            color : "black",
+            color : "#000",
             colors : ['#7E3817', '#C35817', '#EE9A4D', '#A0C544', '#348017', '#307D7E'],
             lineWidth : 1,
             globalAlpha : 1,
             padding : {up : 30, down : 30, left : 30, right : 30, center : 30, elements : 10},
             clock: {radius: 10,
                     background : {
-                        color : 'black',
+                        color : '#000',
                         opacity :  0.5
                     },
                     dial : {
@@ -25,15 +25,15 @@ function standAlone(m, c){
             },
             pie: {
                 inside_color : 'red',
-                outside_color : 'black',
+                outside_color : '#000',
                 font : "16px Arial",
-                fillStyle : 'black',
-                strokeStyle : 'red',
+                fillStyle : '#000',
                 paddingleft : 20,
                 paddingtop : 20,
+                paddingtoptext : 0,
                 paddingcenter : 30,
-                paddingelements : 40,
-            },
+                paddingelements : 40
+            }
         };
 
     var configs = function(c){
@@ -129,39 +129,67 @@ function standAlone(m, c){
             lastPosition = 0, 
             total = 100, 
             data = configs.get('data'),
-            colors = configs.get('colors');
+            colors = configs.get('colors'),
+            colors_text = configs.get('pie/fillStyle');
     
+        var j = 0;
         for (var i in data) {
-            canvas.fillStyle = colors[i];
+            canvas.fillStyle = typeof colors[j] == 'undefined' 
+                               ? '#000' 
+                               : colors[j];
             canvas.strokeStyle = configs.get('pie/outside_color');
             canvas.beginPath();
-            canvas.moveTo(configs.get('width')/ delimeter,configs.get('height')/ delimeter);
-            canvas.arc(configs.get('width')/ delimeter,configs.get('height')/ delimeter,radius,lastPosition,lastPosition+(Math.PI*2*(data[i].value/total)),false);
-            canvas.lineTo(configs.get('width')/ delimeter,configs.get('height')/ delimeter);
+            canvas.moveTo(configs.get('width')/ delimeter,
+                          configs.get('height')/ delimeter);
+            canvas.arc(configs.get('width')/ delimeter,
+                       configs.get('height')/ delimeter,
+                       radius,
+                       lastPosition,
+                       lastPosition+(Math.PI*2*(data[i].value/total)),
+                       false);
+            canvas.lineTo(configs.get('width')/ delimeter,
+                          configs.get('height')/ delimeter);
             canvas.fill();
             canvas.stroke();
+            j++;
             lastPosition += Math.PI*2*(data[i].value/total);
         }
         canvas.beginPath();
         canvas.fillStyle = configs.get('pie/inside_color');
-        canvas.arc(configs.get('width')/ delimeter, configs.get('height')/ delimeter, radius - configs.get('pie/paddingcenter'), 0, 2 * Math.PI, false);
+        canvas.arc(configs.get('width')/ delimeter, 
+                   configs.get('height')/ delimeter, 
+                   radius - configs.get('pie/paddingcenter'), 
+                   0, 
+                   2 * Math.PI, 
+                   false);
         canvas.fill();
         canvas.stroke();
         
+        var j = 0;
         for (var i in data) {
             canvas.beginPath();
-            canvas.fillStyle = configs.get('pie/fillStyle');
-            canvas.strokeStyle = configs.get('pie/strokeStyle');
+            var color= typeof colors_text[j] == 'undefined'
+                       ? '#000'
+                       : ((typeof colors_text[j] != 'undefined' 
+                           && colors_text[j].length == 1) 
+                           ?  colors_text : colors_text[j]);
+            canvas.fillStyle = color;
+            canvas.strokeStyle = color;
             canvas.font = configs.get('pie/font');
             
             var width = canvas.measureText(data[i].name).width;
-            canvas.fillText(data[i].name, radius - width / 2, radius - configs.get('pie/paddingleft') + i * configs.get('pie/paddingtop'));
+            canvas.fillText(data[i].name, 
+                            radius - width / 2, 
+                            radius - configs.get('pie/paddingleft') 
+                                    + i * configs.get('pie/paddingtop') 
+                                    - configs.get('pie/paddingtoptext'));
             canvas.fill();
             canvas.stroke();
+            j++;
         }
     },
     
-    createPipeCanvas = function(){
+    createSmallPipeCanvas = function(){
       this.setElementCanvas();
       canvas.beginPath();
       this.drawPiePies();
@@ -170,6 +198,89 @@ function standAlone(m, c){
       canvas.restore();
       canvas.stroke();
     };
+    
+    drawPie = function(){
+        var delimeter = 2,
+            radius = configs.get('width') / 4 ,
+            lastPosition = 0, 
+            total = 100, 
+            data = configs.get('data'),
+            colors = configs.get('colors'),
+            colors_text = configs.get('pie/fillStyle');
+            
+        var j = 0;
+        for (var i in data) {
+            canvas.fillStyle = colors[j];
+            canvas.beginPath();
+            canvas.moveTo(
+                                configs.get('width') / delimeter,
+                                configs.get('height') / delimeter
+                              );
+            canvas.arc(
+                                configs.get('width') / delimeter,
+                                configs.get('height') / delimeter,
+                                radius,
+                                lastPosition,
+                                lastPosition+(Math.PI*2*(data[i].value/total)),
+                                false
+                           );
+            
+            canvas.lineTo(
+                                configs.get('width') / delimeter,
+                                configs.get('height') / delimeter
+                              );
+            canvas.fill();
+            canvas.stroke();
+            canvas.restore();
+            j++;
+            lastPosition += Math.PI*2*(data[i].value/total);
+        }
+        lastPosition = 0;
+        
+        var j = 0;
+        for (var i in data) {
+            var color= typeof colors_text[j] == 'undefined'
+                       ? '#000'
+                       : ((typeof colors_text[j] != 'undefined' 
+                           && colors_text[j].length == 1) 
+                           ?  colors_text : colors_text[j]);
+            canvas.fillStyle = color;
+            canvas.strokeStyle = color;
+            canvas.font = configs.get('pie/font');
+            
+            canvas.beginPath();
+            var angle = (2 * (lastPosition) + (Math.PI*2*(data[i].value/total)) ) /2;
+                var x = radius * Math.cos(angle),
+                    y = radius * Math.sin(angle);
+                    
+                    if(angle < Math.PI){
+                        y = configs.get('height') / 2 + y;
+                        x = configs.get('width') / 2 + x;
+                        
+                    } else {
+                        y = configs.get('height') / 2 + y;
+                        x = configs.get('width') / 2 + x;
+                    }
+                
+                canvas.moveTo(configs.get('width') / delimeter,configs.get('height') / delimeter);
+                canvas.lineTo(x , y);
+                canvas.fillText(data[i].name, x , y);
+                lastPosition += Math.PI*2*(data[i].value/total);
+                j++;
+        }
+    };
+    
+    
+    createPipeCanvas = function(){
+      this.setElementCanvas();
+      canvas.beginPath();
+      this.drawPie();
+      canvas.fill();
+      canvas.closePath();
+      canvas.restore();
+      canvas.stroke();
+    };
+    
     
     init(m);
 }

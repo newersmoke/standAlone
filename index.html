@@ -60,6 +60,45 @@
                     } 
                 }
             );
+            var stands = new standAlone('createLineChart', 
+                {'element': 'fourth' ,
+                    data : { 1 :{name : 'EUR1' ,value : 5}, 
+                             2 :{name : 'EUR2' ,value : 12}, 
+                             3 :{name : 'EUR3' ,value : 5}, 
+                             4 :{name : 'EUR4' ,value : 18}, 
+                             5 :{name : 'EUR5' ,value : 10}, 
+                             6 :{name : 'EUR6' ,value : 50}
+                            },
+                     height : 600, 
+                     width : 600, 
+                     chart : {
+                            background_color : '#307D7E',
+                            background_alpha : 1,
+                            vertical_alpha : 1,
+                            horizontal_alpha : 1,
+                            vertical_color : '#EE9A4D',
+                            vertical_height : 30,
+                            horizontal_width : 50,
+                            horizontal_color : '#EE9A4D',
+                            line_alpha : 0.5,
+                            line_width : 3,
+                            line_color : 'blue',
+                            font : "16px Arial",
+                            font_vertical : "16px Arial",
+                            font_horizontal : "16px Arial",
+                            fillStyle : '#000',
+                            col: 5,
+                            row : 5,
+                            array_key : 'value',
+                            draw_vertical_lines : 1,
+                            vertical_lines : 0.7,
+                            vertical_lines_color : 'red',
+                            draw_horizontal_lines : 1,
+                            horizontal_lines : 0.7,
+                            horizontal_lines_color : 'black',
+                        }
+                }
+            );
              /*stand.caller('dsas');
             stand.init('findElement', {'element': '1canvas'});*/
             /*var stand = new standAlone();
@@ -74,8 +113,6 @@
         <canvas id="first"  class="first"></canvas>
         <canvas class="second"></canvas>
         <canvas class="third"></canvas>
-        <canvas class="clock"></canvas>
-        <canvas class="pie"></canvas>
-        <canvas class="piepies"></canvas>
+        <canvas class="fourth"></canvas>
     </body>
 </html>

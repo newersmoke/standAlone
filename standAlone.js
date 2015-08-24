@@ -35,6 +35,32 @@ function standAlone(m, c){
                 paddingtoptext : 0,
                 paddingcenter : 30,
                 paddingelements : 40
+            },
+            chart : {
+                background_color : '#307D7E',
+                background_alpha : 1,
+                vertical_alpha : 1,
+                horizontal_alpha : 1,
+                vertical_color : '#EE9A4D',
+                vertical_height : 30,
+                horizontal_width : 50,
+                horizontal_color : '#EE9A4D',
+                line_alpha : 0.5,
+                line_width : 3,
+                line_color : 'blue',
+                font : "16px Arial",
+                font_vertical : "16px Arial",
+                font_horizontal : "16px Arial",
+                fillStyle : '#000',
+                col: 5,
+                row : 5,
+                array_key : 'value',
+                draw_vertical_lines : 1,
+                vertical_lines : 1,
+                vertical_lines_color : 'black',
+                draw_horizontal_lines : 1,
+                horizontal_lines : 0.1,
+                horizontal_lines_color : 'black',
             }
         };
 
@@ -71,6 +97,19 @@ function standAlone(m, c){
                 return configs[c.split('/')[0]][c.split('/')[1]];
             } else {
                 return configs[c];
+            }
+        }catch(e){
+            if(debug){
+                console.log(e);
+            }
+        }
+    };
+    configs.set = function(c, val){
+        try{
+            if(c.indexOf('/') >= 0){
+                 configs[c.split('/')[0]][c.split('/')[1]] = val;
+            } else {
+                 configs[c] = val;
             }
         }catch(e){
             if(debug){
@@ -282,6 +321,133 @@ function standAlone(m, c){
       this.setElementCanvas();
       canvas.beginPath();
       this.drawPie();
+      canvas.fill();
+      canvas.closePath();
+      canvas.restore();
+      canvas.stroke();
+    };
+    
+    getYCoord = function(y){
+        return (configs.get('max') - y) / (configs.get('max') - configs.get('min')) * (configs.get('height') - configs.get('chart/vertical_height') - configs.get('padding/down'));
+    }
+    
+    getMimMax = function (){
+        var data = configs.get('data'),
+            key = configs.get('chart/array_key');
+        for(var c in data){
+            if(data[c].hasOwnProperty(key)){
+                if(configs.get('min') === null || configs.get('min') > data[c][key]){
+                    configs.set('min', data[c][key]);
+                }
+                
+                if(configs.get('max') === null || configs.get('max') < data[c][key]){
+                    configs.set('max', data[c][key]);
+                }
+            }
+        }
+    }
+    
+    drawHorizontalGrids = function(){
+        canvas.stroke();
+        canvas.restore();
+        canvas.beginPath();
+        canvas.strokeStyle = configs.get('chart/horizontal_lines_color');
+        canvas.lineWidth = configs.get('chart/horizontal_lines');
+        var prev = [],
+            w = (configs.get('width') - configs.get('chart/horizontal_width')) / configs.get('chart/col');
+            for(var k = 0 ; k <= configs.get('chart/col'); k++){
+                if(first){
+                    first = false;
+                    canvas.moveTo(w * k, 0);   
+                    canvas.lineTo(w * k, configs.get('height') - configs.get('chart/vertical_height'));   
+                } else {
+                    canvas.moveTo(w * k, 0);   
+                    canvas.lineTo(w * k, configs.get('height') - configs.get('chart/vertical_height'));   
+                }
+            }
+        canvas.closePath();
+    }
+    drawVerticalGrids = function(){
+        canvas.stroke();
+        canvas.restore();
+        canvas.beginPath();
+        canvas.strokeStyle = configs.get('chart/vertical_lines_color');
+        canvas.lineWidth = configs.get('chart/vertical_lines');
+        var del = (configs.get('max') - configs.get('min')) / configs.get('chart/row');
+            for(var k = 0 ; k <= configs.get('chart/row'); k++){
+                var y_coord = getYCoord(configs.get('min') + del * k)
+                if(first){
+                    first = false;
+                    canvas.moveTo(0, y_coord);   
+                    canvas.lineTo(configs.get('width') - configs.get('chart/horizontal_width') , y_coord);   
+                } else {
+                    canvas.moveTo(0, y_coord);   
+                    canvas.lineTo(configs.get('width') - configs.get('chart/horizontal_width'), y_coord);   
+                }
+            }
+        canvas.closePath();
+    }
+    
+    drawLineChart = function(){
+        var first = true,
+            data = configs.get('data'),
+            xScale = (configs.get('width') - configs.get('chart/horizontal_width')) / configs.get('chart/col'),
+            i = 0;
+        
+        canvas.save();
+        canvas.fillStyle = configs.get('chart/background_color');
+        canvas.globalAlpha = configs.get('chart/background_alpha');
+        canvas.fillRect(0,0, configs.get('width'),configs.get('height'));
+        canvas.fill();
+        canvas.restore();
+        
+        canvas.fillStyle = configs.get('chart/vertical_color');
+        canvas.globalAlpha = configs.get('chart/vertical_alpha');
+        canvas.fillRect(0,configs.get('height') - configs.get('chart/vertical_height'), configs.get('width') , configs.get('height'));
+        canvas.fill();
+        canvas.restore();
+        
+        canvas.fillStyle = configs.get('chart/horizontal_color');
+        canvas.globalAlpha = configs.get('chart/vhorizontal_alpha');
+        canvas.fillRect(configs.get('width') - configs.get('chart/horizontal_width'),0, configs.get('width') , configs.get('height'));
+        canvas.fill();
+        canvas.restore();
+        
+        
+        
+        canvas.strokeStyle = configs.get('chart/line_color');
+        canvas.lineWidth = configs.get('chart/line_width');
+        canvas.globalAlpha = configs.get('chart/line_alpha');
+        
+        var prev = [];
+        for(var c in data){
+            if(first){
+                first = false;
+                canvas.moveTo(xScale * i, getYCoord(configs.get('data')[c][configs.get('chart/array_key')]));   
+                canvas.lineTo(xScale * i, getYCoord(configs.get('data')[c][configs.get('chart/array_key')]));   
+            } else {
+                canvas.moveTo(prev.x, prev.y);   
+                canvas.lineTo(xScale * i, getYCoord(configs.get('data')[c][configs.get('chart/array_key')]));   
+            }
+            prev = {x : xScale * i, y : getYCoord(configs.get('data')[c][configs.get('chart/array_key')])};
+            i++;
+        }
+        if(configs.get('chart/draw_horizontal_lines')){
+            drawHorizontalGrids();
+        }
+
+        if(configs.get('chart/draw_vertical_lines')){
+            drawVerticalGrids();
+        }
+        
+    }
+    
+    
+    createLineChart = function(){
+      this.setElementCanvas();
+      this.getMimMax();
+      canvas.beginPath();
+      this.drawLineChart();
       canvas.fill();
       canvas.closePath();
       canvas.restore();
